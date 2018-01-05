@@ -89,7 +89,7 @@ public class Database {
     public void connect() {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:" + UniversalMarket.getConfig().getFileLocation().getParent().toString() + File.separator + "universalmarket.db?autoReconnect=true";
+            String url = "jdbc:sqlite:" + UniversalMarket.getConfig().getFileLocation().getParent().toString() + File.separator + "universalmarket.db";
             conn = DriverManager.getConnection(url);
             connection = conn;
 

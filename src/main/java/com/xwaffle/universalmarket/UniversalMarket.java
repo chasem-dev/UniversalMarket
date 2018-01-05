@@ -1,6 +1,7 @@
 package com.xwaffle.universalmarket;
 
 import com.google.inject.Inject;
+import com.xwaffle.universalmarket.bstats.Metrics;
 import com.xwaffle.universalmarket.commands.MarketCommand;
 import com.xwaffle.universalmarket.config.MarketConfig;
 import com.xwaffle.universalmarket.database.Database;
@@ -29,7 +30,8 @@ import java.nio.file.Path;
         description = "A Universal Market",
         authors = {
                 "Xwaffle"
-        }
+        },
+        version = "1.0"
 )
 public class UniversalMarket {
 
@@ -43,6 +45,12 @@ public class UniversalMarket {
 
     @Inject
     private Game game;
+
+
+    @SuppressWarnings("unused")
+    @Inject
+    private Metrics metrics;
+
 
     private static UniversalMarket instance;
     private Database database;

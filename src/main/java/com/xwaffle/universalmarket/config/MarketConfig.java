@@ -88,7 +88,7 @@ public class MarketConfig implements Configurable {
         get().getNode(new Object[]{"Market", "market-tax"}).setValue(0.20).setComment("Take this number and multiply the price by it, the user must pay this much before adding an item to the market.");
         get().getNode(new Object[]{"Market", "pay-to-sell"}).setValue(false).setComment("Enable using the market-price config value.");
         get().getNode(new Object[]{"Market", "market-price"}).setValue(1000).setComment("Instead of taxing, take a flat amount of the user before they can sell.");
-        get().getNode(new Object[]{"Market", "use-permissions-to-sell"}).setValue(false).setComment("You can give permissions for the amount of items a user can sell. com.xwaffle.universalmarket.add.3 allows 3 items for the user");
+        get().getNode(new Object[]{"Market", "use-permissions-to-sell"}).setValue(false).setComment("You can give permissions for the amount of items a user can sell. com.xwaffle.universalmarket.addmax.3 allows 3 items for the user");
 
 
     }
