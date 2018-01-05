@@ -38,3 +38,6 @@ All Universal Market commands can be use as /um or /universalmarket
 `com.xwaffle.universalmarket.addmax.##` - Sets the amount of items a user may  sell in the Universal Market.
 
 EX: `com.xwaffle.universalmarket.addmax.5`, this will allow the user to sell 5 items at a time in the Universal Market.
+
+## Stats
+https://bstats.org/plugin/sponge/UniversalMarket
