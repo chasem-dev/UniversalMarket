@@ -28,6 +28,9 @@ All Universal Market commands can be use as /um or /universalmarket
 
 `com.xwaffle.universalmarket.add` - Permission to add items to the Universal Market.
 
+`com.xwaffle.universalmarket.remove` - Permission to remove a players item from being listed in the Universal Market.
+![MarketRemove](https://gyazo.com/bb9fbd4406a8c85dd7f74e0adbeedb33.png)
+
 #### If the config option `use-permission-to-sell` is equal to true
 
 `com.xwaffle.universalmarket.addmax.##` - Sets the amount of items a user may  sell in the Universal Market.
