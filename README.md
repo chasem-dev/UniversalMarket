@@ -33,7 +33,7 @@ All Universal Market commands can be use as /um or /universalmarket
 
 #### If the config option `use-permission-to-sell` is equal to true
 
-*Note* When enabled, be sure to set the `total-items-player-can-sell` config option to be higher than the highest permission node you give out.
+**Note When enabled, be sure to set the `total-items-player-can-sell` config option to be higher than the highest permission node you give out.*
 
 `com.xwaffle.universalmarket.addmax.##` - Sets the amount of items a user may  sell in the Universal Market.
 
