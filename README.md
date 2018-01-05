@@ -20,7 +20,7 @@ All Universal Market commands can be use as /um or /universalmarket
 ## Market Item
 ![MarketItem](https://gyazo.com/34bf241b733cbed513214f9d89bf177d.png)
 ## Market Config
-![MarketConfig](https://gyazo.com/85e0b69000f2da4f459a0fd8404d34ca.png)
+![MarketConfig](https://gyazo.com/8620a0d03a31c549d692fa37a4540de6.png)
 
 ## Permissions
 
