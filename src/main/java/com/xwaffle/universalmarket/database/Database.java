@@ -12,6 +12,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.io.*;
 import java.sql.*;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -88,9 +89,10 @@ public class Database {
     public void connect() {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:" + UniversalMarket.getConfig().getFileLocation().getParent().toString() + File.separator + "universalmarket.db";
+            String url = "jdbc:sqlite:" + UniversalMarket.getConfig().getFileLocation().getParent().toString() + File.separator + "universalmarket.db?autoReconnect=true";
             conn = DriverManager.getConnection(url);
             connection = conn;
+
             System.out.println("Connection to SQLite has been established.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
