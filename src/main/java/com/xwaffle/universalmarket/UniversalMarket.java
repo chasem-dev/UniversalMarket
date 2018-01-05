@@ -23,6 +23,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 @Plugin(
         id = "universalmarket",
@@ -90,7 +91,8 @@ public class UniversalMarket {
 
 
     @Listener
-    public void onServerStopping(GameStoppingServerEvent event) {
+    public void onServerStopping(GameStoppingServerEvent event) throws SQLException {
+        this.database.getConnection().close();
     }
 
     private EconomyService economyService;
