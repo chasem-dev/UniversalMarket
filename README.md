@@ -28,7 +28,7 @@ All Universal Market commands can be use as /um or /universalmarket
 
 `com.xwaffle.universalmarket.add` - Permission to add items to the Universal Market.
 
-##### If user-permission-t-sell is equal to true
+#### If the config option `use-permission-to-sell` is equal to true
 
 `com.xwaffle.universalmarket.addmax.##` - Sets the amount of items a user may  sell in the Universal Market.
 
