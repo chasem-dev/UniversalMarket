@@ -20,7 +20,7 @@ All Universal Market commands can be use as /um or /universalmarket
 ## Market Item
 ![MarketItem](https://gyazo.com/34bf241b733cbed513214f9d89bf177d.png)
 ## Market Config
-![MarketConfig](https://gyazo.com/85e0b69000f2da4f459a0fd8404d34ca.png)
+![MarketConfig](https://gyazo.com/8620a0d03a31c549d692fa37a4540de6.png)
 
 ## Permissions
 
@@ -32,6 +32,8 @@ All Universal Market commands can be use as /um or /universalmarket
 ![MarketRemove](https://gyazo.com/bb9fbd4406a8c85dd7f74e0adbeedb33.png)
 
 #### If the config option `use-permission-to-sell` is equal to true
+
+**Note When enabled, be sure to set the `total-items-player-can-sell` config option to be higher than the highest permission node you give out.*
 
 `com.xwaffle.universalmarket.addmax.##` - Sets the amount of items a user may  sell in the Universal Market.
 
