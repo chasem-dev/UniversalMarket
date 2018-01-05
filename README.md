@@ -25,6 +25,7 @@ All Universal Market commands can be use as /um or /universalmarket
 ### Permissions
 
 `com.xwaffle.universalmarket.open` - Permission to open the Universal Market.
+
 `com.xwaffle.universalmarket.add` - Permission to add items to the Universal Market.
 
 # If user-permission-t-sell is equal to true
