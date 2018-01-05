@@ -3,3 +3,4 @@
 /.gradle/3.3/taskArtifacts
 /*.iml
 /build
+/libs
