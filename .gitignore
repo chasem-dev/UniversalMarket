@@ -1,0 +1,5 @@
+/.idea
+/build/tmp/retromapReplacedMain
+/.gradle/3.3/taskArtifacts
+/*.iml
+/build
