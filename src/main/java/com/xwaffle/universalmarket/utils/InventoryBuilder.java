@@ -11,6 +11,8 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.text.Text;
 
+import java.util.Iterator;
+
 /**
  * Created by Chase(Xwaffle) on 12/29/2017.
  */
@@ -44,12 +46,22 @@ public abstract class InventoryBuilder {
     }
 
     public InventoryBuilder addItem(ItemStack stack) {
-        inventory.query(stack);
+        inventory.offer(stack);
         return this;
     }
 
     public InventoryBuilder setItem(int slot, ItemStack stack) {
-        inventory.query(new SlotIndex(slot)).set(stack);
+        int index = 0;
+        Iterator<Inventory> iterator = inventory.slots().iterator();
+        while (iterator.hasNext()) {
+            Inventory inv = iterator.next();
+            if (index == slot) {
+                inv.set(stack);
+                break;
+            }
+            index++;
+        }
+
         return this;
     }
 

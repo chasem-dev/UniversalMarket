@@ -1,5 +1,6 @@
 package com.xwaffle.universalmarket.market;
 
+import com.google.common.collect.Lists;
 import com.xwaffle.universalmarket.UniversalMarket;
 import com.xwaffle.universalmarket.utils.InventoryBuilder;
 import com.xwaffle.universalmarket.utils.ItemBuilder;
@@ -12,12 +13,16 @@ import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.InventoryProperty;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.item.inventory.query.QueryOperation;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.common.item.inventory.adapter.impl.slots.SlotAdapter;
+import org.spongepowered.common.item.inventory.query.operation.InventoryPropertyQueryOperation;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.math.BigDecimal;
@@ -212,11 +217,7 @@ public class Market {
         while (index < 45) {
             if (currentListing >= getListings().size()) {
                 //Draw Empty.
-//                if (index == 0) {
                 inv.offer(new ItemBuilder(ItemTypes.STAINED_GLASS_PANE, 1).setName(Text.of("")).setDyeColor(DyeColors.BLACK).addTag("unique", UUID.randomUUID().toString()).build());
-//                } else {
-//                    inv.query(new SlotIndex(index)).set(new ItemBuilder(ItemTypes.STAINED_GLASS_PANE, 1).setName(Text.of("")).setDyeColor(DyeColors.BLACK).build());
-//                }
             } else {
                 MarketItem item = getListings().get(currentListing);
 
@@ -230,25 +231,19 @@ public class Market {
             currentListing++;
             index++;
         }
-
+        ArrayList<Inventory> myList = Lists.newArrayList(inv.slots());
         for (int i = 45; i < 54; i++) {
-            inv.query(new SlotIndex(i)).set(new ItemBuilder(ItemTypes.STAINED_GLASS_PANE, 1).setName(Text.of("")).setDyeColor(DyeColors.LIME).build());
-
+            myList.get(i).set(new ItemBuilder(ItemTypes.STAINED_GLASS_PANE, 1).setName(Text.of("")).setDyeColor(DyeColors.LIME).build());
         }
-
         if (page > 1) {
-            inv.query(new SlotIndex(45)).set(new ItemBuilder(ItemTypes.ARROW).setName(Text.of(TextColors.YELLOW, "Previous Page")).build());
+            myList.get(45).set(new ItemBuilder(ItemTypes.ARROW).setName(Text.of(TextColors.YELLOW, "Previous Page")).build());
         }
-
         if (getListings().size() >= (page * 45)) {
-            inv.query(new SlotIndex(53)).set(new ItemBuilder(ItemTypes.ARROW).setName(Text.of(TextColors.YELLOW, "Next Page")).build());
+            myList.get(53).set(new ItemBuilder(ItemTypes.ARROW).setName(Text.of(TextColors.YELLOW, "Next Page")).build());
         }
-
         if (countListings(player.getUniqueId()) > 0) {
-            inv.query(new SlotIndex(47)).set(new ItemBuilder(ItemTypes.NAME_TAG).setName(Text.of(TextColors.GREEN, "Return Your Items")).setLore(Text.of(TextColors.GRAY, "Return all items that you've put up for sell.")).build());
+            myList.get(47).set(new ItemBuilder(ItemTypes.NAME_TAG).setName(Text.of(TextColors.GREEN, "Return Your Items")).setLore(Text.of(TextColors.GRAY, "Return all items that you've put up for sell.")).build());
         }
-
-
         player.openInventory(inv);
     }
 
@@ -260,6 +255,8 @@ public class Market {
             @Override
             public void onClickInventoryEvent(ClickInventoryEvent e) {
                 e.setCancelled(true);
+                ArrayList<Inventory> myList = Lists.newArrayList(e.getTargetInventory().slots());
+
                 if (e.getTransactions().size() != 0) {
                     int slotClicked = ((SlotAdapter) e.getTransactions().get(0).getSlot()).slotNumber;
 
@@ -270,7 +267,7 @@ public class Market {
                         Sponge.getScheduler().createTaskBuilder().execute(() ->
                                 player.closeInventory()).submit(UniversalMarket.getInstance());
                     } else if (slotClicked == 3) {
-                        ItemStack stack = e.getTargetInventory().query(new SlotIndex(4)).peek().get();
+                        ItemStack stack = myList.get(4).peek().get();
                         net.minecraft.item.ItemStack nmsStack = ItemStackUtil.toNative(stack);
                         NBTTagCompound nbt = nmsStack.getTagCompound();
                         int databaseID = nbt != null ? nbt.getInteger("id") : -1;
@@ -321,8 +318,11 @@ public class Market {
                 .build();
 
 
+        ArrayList<Inventory> myList = Lists.newArrayList(inv.slots());
+
+
         if (player.hasPermission("com.xwaffle.universalmarket.remove")) {
-            inv.query(new SlotIndex(8)).set(new ItemBuilder(ItemTypes.LAVA_BUCKET, 1).setName(Text.of(TextColors.GRAY, "Remove Player Listing")).setLore(Text.of(TextColors.RED, "Admin Only")).build());
+            myList.get(8).set(new ItemBuilder(ItemTypes.LAVA_BUCKET, 1).setName(Text.of(TextColors.GRAY, "Remove Player Listing")).setLore(Text.of(TextColors.RED, "Admin Only")).build());
         }
 
         ItemStack purchaseItem = new ItemBuilder(ItemTypes.DYE, 1, 10)
@@ -331,13 +331,13 @@ public class Market {
 
 
         if (marketItem.getOwnerUUID().equals(player.getUniqueId())) {
-            inv.query(new SlotIndex(0)).set(new ItemBuilder(ItemTypes.SHEARS, 1).setName(Text.of(TextColors.GRAY, "Remove Listing")).build());
+            myList.get(0).set(new ItemBuilder(ItemTypes.SHEARS, 1).setName(Text.of(TextColors.GRAY, "Remove Listing")).build());
         }
 
-        inv.query(new SlotIndex(3)).set(purchaseItem);
-        inv.query(new SlotIndex(4)).set(marketItem.getDisplay());
+        myList.get(3).set(purchaseItem);
+        myList.get(4).set(marketItem.getDisplay());
         ItemStack backItem = new ItemBuilder(ItemTypes.BARRIER, 1).setName(Text.of(TextColors.RED, "Back")).build();
-        inv.query(new SlotIndex(5)).set(backItem);
+        myList.get(5).set(backItem);
 
         player.openInventory(inv);
 
