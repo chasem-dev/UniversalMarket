@@ -110,6 +110,10 @@ public class MarketCommand extends BasicCommand {
                         if (args.length >= 3) {
                             try {
                                 amount = Integer.parseInt(args[2]);
+                                if(amount <= 0){
+                                    player.sendMessage(Text.of(TextColors.RED, "You must enter a positive number to sell in the market!"));
+                                    return CommandResult.success();
+                                }
                             } catch (Exception exc) {
                                 player.sendMessage(Text.of(TextColors.RED, "Invalid Amount for Item!"));
                                 player.sendMessage(Text.of(TextColors.YELLOW, "/um " + args[0].toLowerCase() + " (price of item in hand) (<optional> Amount)"));
