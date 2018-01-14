@@ -2,10 +2,7 @@ package com.xwaffle.universalmarket.utils;
 
 import com.xwaffle.universalmarket.UniversalMarket;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -52,7 +49,7 @@ public abstract class InventoryBuilder {
     }
 
     public InventoryBuilder setItem(int slot, ItemStack stack) {
-        inventory.query(new SlotIndex(slot)).set( stack);
+        inventory.query(new SlotIndex(slot)).set(stack);
         return this;
     }
 
@@ -61,7 +58,7 @@ public abstract class InventoryBuilder {
     }
 
     public void display(Player player) {
-        player.openInventory(inventory, Cause.of(NamedCause.of("Open", UniversalMarket.getInstance())));
+        player.openInventory(inventory);
     }
 
     public abstract void onClickInventoryEvent(ClickInventoryEvent event);

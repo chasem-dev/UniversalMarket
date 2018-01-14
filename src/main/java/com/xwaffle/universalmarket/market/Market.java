@@ -8,7 +8,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -184,7 +184,7 @@ public class Market {
                                 }
                             }
                             Sponge.getScheduler().createTaskBuilder().execute(() -> {
-                                player.closeInventory(Cause.of(NamedCause.of("UM", UniversalMarket.getInstance())));
+                                player.closeInventory();
                                 player.sendMessage(Text.of(TextColors.GREEN, "Your items have been removed from the Market."));
                             }).delayTicks(1).submit(UniversalMarket.getInstance());
 
@@ -249,7 +249,7 @@ public class Market {
         }
 
 
-        player.openInventory(inv, Cause.of(NamedCause.owner(UniversalMarket.getInstance())));
+        player.openInventory(inv);
     }
 
 
@@ -268,9 +268,7 @@ public class Market {
                         player.getInventory().offer(marketItem.getItem());
                         marketItem.delete();
                         Sponge.getScheduler().createTaskBuilder().execute(() ->
-                                player.closeInventory(Cause.of(NamedCause.of("Close", UniversalMarket.getInstance())))).submit(UniversalMarket.getInstance());
-
-                        return;
+                                player.closeInventory()).submit(UniversalMarket.getInstance());
                     } else if (slotClicked == 3) {
                         ItemStack stack = e.getTargetInventory().query(new SlotIndex(4)).peek().get();
                         net.minecraft.item.ItemStack nmsStack = ItemStackUtil.toNative(stack);
@@ -290,15 +288,14 @@ public class Market {
                         if (account.getBalance(currency).doubleValue() >= marketItem.getPrice()) {
                             item.delete();
                             player.sendMessage(Text.of(TextColors.DARK_GRAY, "Item Purchased"));
-                            account.withdraw(currency, new BigDecimal(marketItem.getPrice()), Cause.of(NamedCause.of("Withdraw", UniversalMarket.getInstance())));
-                            UniversalMarket.getInstance().getEconomyService().getOrCreateAccount(marketItem.getOwnerUUID()).get().deposit(currency, new BigDecimal(marketItem.getPrice()), Cause.of(NamedCause.of("Deposit", UniversalMarket.getInstance())));
+                            account.withdraw(currency, new BigDecimal(marketItem.getPrice()), Cause.of(EventContext.empty(), UniversalMarket.getInstance()));
+                            UniversalMarket.getInstance().getEconomyService().getOrCreateAccount(marketItem.getOwnerUUID()).get().deposit(currency, new BigDecimal(marketItem.getPrice()), Cause.of(EventContext.empty(), UniversalMarket.getInstance()));
                             Sponge.getServer().getPlayer(marketItem.getOwnerUUID()).ifPresent(seller -> seller.sendMessage(Text.of(TextColors.DARK_GRAY, "Item Sold.")));
                             Sponge.getServer().getPlayer(marketItem.getOwnerUUID()).ifPresent(seller -> seller.sendMessage(Text.of(TextColors.YELLOW, "+ ", TextColors.GREEN, marketItem.getPrice())));
                             player.sendMessage(Text.of(TextColors.DARK_RED, "- ", TextColors.RED, marketItem.getPrice()));
                             player.sendMessage(Text.of(TextColors.YELLOW, "New Balance: ", TextColors.GREEN, account.getBalance(currency)));
                             player.getInventory().offer(item.getItem());
-                            Sponge.getScheduler().createTaskBuilder().execute(() ->
-                                    player.closeInventory(Cause.of(NamedCause.of("Close", UniversalMarket.getInstance())))).submit(UniversalMarket.getInstance());
+                            Sponge.getScheduler().createTaskBuilder().execute(player::closeInventory).submit(UniversalMarket.getInstance());
                         } else {
                             player.sendMessage(Text.of(TextColors.RED, "Insufficient funds."));
                         }
@@ -308,8 +305,7 @@ public class Market {
                     } else if (slotClicked == 8 && player.hasPermission("com.xwaffle.universalmarket.remove")) {
                         player.sendMessage(Text.of(TextColors.RED, "You removed a players Listing."));
                         marketItem.forceExpire();
-                        Sponge.getScheduler().createTaskBuilder().execute(() ->
-                                player.closeInventory(Cause.of(NamedCause.of("Close", UniversalMarket.getInstance())))).submit(UniversalMarket.getInstance());
+                        Sponge.getScheduler().createTaskBuilder().execute(player::closeInventory).submit(UniversalMarket.getInstance());
 
                         return;
                     }
@@ -343,7 +339,7 @@ public class Market {
         ItemStack backItem = new ItemBuilder(ItemTypes.BARRIER, 1).setName(Text.of(TextColors.RED, "Back")).build();
         inv.query(new SlotIndex(5)).set(backItem);
 
-        player.openInventory(inv, Cause.of(NamedCause.owner(UniversalMarket.getInstance())));
+        player.openInventory(inv);
 
     }
 

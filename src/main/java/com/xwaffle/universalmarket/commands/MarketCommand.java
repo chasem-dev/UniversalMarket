@@ -8,7 +8,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
@@ -35,7 +35,11 @@ public class MarketCommand extends BasicCommand {
 
 
         if (arguments.isEmpty() || arguments.equalsIgnoreCase("")) {
-            UniversalMarket.getInstance().getMarket().openMarket(player);
+            if (player.hasPermission("com.xwaffle.universalmarket.open")) {
+                UniversalMarket.getInstance().getMarket().openMarket(player);
+            } else {
+                player.sendMessage(Text.of(TextColors.RED, "You do not have permission to view the market."));
+            }
             return CommandResult.success();
         }
 
@@ -123,7 +127,7 @@ public class MarketCommand extends BasicCommand {
                                 player.sendMessage(Text.of(TextColors.RED, "You need to pay ", TextColors.GREEN, tax, TextColors.RED, " in order to sell this item in the market."));
                                 return CommandResult.success();
                             } else {
-                                account.withdraw(currency, new BigDecimal(tax), Cause.of(NamedCause.of("UniversalMarket", UniversalMarket.getInstance())));
+                                account.withdraw(currency, new BigDecimal(tax), Cause.of(EventContext.empty(), UniversalMarket.getInstance()));
                                 player.sendMessage(Text.of(TextColors.RED, "Tax for selling the item has been taken from you!"));
                                 player.sendMessage(Text.of(TextColors.DARK_RED, "- $", TextColors.RED, tax));
                             }
@@ -137,7 +141,7 @@ public class MarketCommand extends BasicCommand {
                                 player.sendMessage(Text.of(TextColors.RED, "You must pay ", TextColors.GRAY, "$" + flatPrice, TextColors.RED, " in order to sell in the market."));
                                 return CommandResult.success();
                             } else {
-                                account.withdraw(currency, new BigDecimal(flatPrice), Cause.of(NamedCause.of("UniversalMarket", UniversalMarket.getInstance())));
+                                account.withdraw(currency, new BigDecimal(flatPrice), Cause.of(EventContext.empty(), UniversalMarket.getInstance()));
                                 player.sendMessage(Text.of(TextColors.RED, "A Market fee has been taken out!"));
                                 player.sendMessage(Text.of(TextColors.DARK_RED, "- $", TextColors.RED, flatPrice));
                             }
