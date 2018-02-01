@@ -45,6 +45,7 @@ public class Market {
     private double tax = 0.20; //20% of the item.
     private int flatPrice = 1000;
     private boolean usePermissionToSell = false;
+    private List<String> blacklist;
 
     private boolean useFKey = false;
 
