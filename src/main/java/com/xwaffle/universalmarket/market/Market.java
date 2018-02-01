@@ -1,10 +1,12 @@
 package com.xwaffle.universalmarket.market;
 
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 import com.xwaffle.universalmarket.UniversalMarket;
 import com.xwaffle.universalmarket.utils.InventoryBuilder;
 import com.xwaffle.universalmarket.utils.ItemBuilder;
 import net.minecraft.nbt.NBTTagCompound;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.living.player.Player;
@@ -86,6 +88,11 @@ public class Market {
         this.payFlatPrice = UniversalMarket.getConfig().get().getNode("Market", "pay-to-sell").getBoolean();
         this.flatPrice = UniversalMarket.getConfig().get().getNode("Market", "market-price").getInt();
         this.usePermissionToSell = UniversalMarket.getConfig().get().getNode("Market", "use-permissions-to-sell").getBoolean();
+        try {
+            this.blacklist = UniversalMarket.getConfig().get().getNode("Market", "blacklist").getList(TypeToken.of(String.class));
+        } catch (ObjectMappingException e) {
+            this.blacklist = new ArrayList<String>();
+        }
 
         this.useFKey = UniversalMarket.getConfig().get().getNode("Market", "f-key-open-market").getBoolean();
 
