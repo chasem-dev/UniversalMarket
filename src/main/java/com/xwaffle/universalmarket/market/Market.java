@@ -102,6 +102,10 @@ public class Market {
 
 //    private int marketID = -1;
 
+    public boolean isItemBlacklisted(MarketItem marketItem) {
+        return blacklist.contains(marketItem.toString());
+    }
+
     public void addItem(MarketItem marketItem, boolean addToDB) {
         if (addToDB) {
             //Adds Item to DB.
