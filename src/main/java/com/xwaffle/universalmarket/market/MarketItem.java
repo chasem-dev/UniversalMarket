@@ -77,7 +77,7 @@ public class MarketItem {
     }
 
     public boolean isBlacklisted() {
-        return UniversalMarket.getInstance().getMarket().isItemBlacklisted(this);
+        return UniversalMarket.getInstance().getMarket().isItemBlacklisted(item.getType());
     }
 
     public void setDatabaseID(int ID) {

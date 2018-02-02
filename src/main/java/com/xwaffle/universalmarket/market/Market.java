@@ -13,6 +13,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryProperty;
@@ -102,8 +103,8 @@ public class Market {
 
 //    private int marketID = -1;
 
-    public boolean isItemBlacklisted(MarketItem marketItem) {
-        return blacklist.contains(marketItem.toString());
+    public boolean isItemBlacklisted(ItemType itemType) {
+        return blacklist.contains(itemType.getId());
     }
 
     public void addItem(MarketItem marketItem, boolean addToDB) {
