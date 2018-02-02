@@ -151,6 +151,11 @@ public class MarketCommand extends BasicCommand {
                             }
                         }
 
+                        if (UniversalMarket.getInstance().getMarket().isItemBlacklisted(stack.getType())) {
+                            player.sendMessage(Text.of(TextColors.RED, "This item cannot be sold (" + stack.getType().getId() + ")"));
+                            return CommandResult.success();
+                        }
+
 
                         int prevAmount = stack.getQuantity();
 
