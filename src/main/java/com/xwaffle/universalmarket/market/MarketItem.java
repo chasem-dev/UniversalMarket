@@ -76,6 +76,10 @@ public class MarketItem {
         this.item = ItemSerialization.deserializeItemStack(data).get();
     }
 
+    public boolean isBlacklisted() {
+        return UniversalMarket.getInstance().getMarket().isItemBlacklisted(item.getType());
+    }
+
     public void setDatabaseID(int ID) {
         this.databaseID = ID;
     }

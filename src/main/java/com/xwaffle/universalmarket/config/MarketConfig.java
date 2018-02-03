@@ -12,6 +12,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
+import java.util.ArrayList;
 
 /**
  * Created by Chase(Xwaffle) on 10/15/2017.
@@ -90,7 +91,7 @@ public class MarketConfig implements Configurable {
         get().getNode(new Object[]{"Market", "market-price"}).setValue(1000).setComment("Instead of taxing, take a flat amount of the user before they can sell.");
         get().getNode(new Object[]{"Market", "use-permissions-to-sell"}).setValue(false).setComment("You can give permissions for the amount of items a user can sell. com.xwaffle.universalmarket.addmax.3 allows 3 items for the user");
 
-
+        get().getNode(new Object[]{"Market", "blacklist"}).setValue(new ArrayList<String>()).setComment("Items that users can not sell");
     }
 
     public CommentedConfigurationNode get() {
