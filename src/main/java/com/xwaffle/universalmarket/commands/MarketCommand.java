@@ -110,7 +110,7 @@ public class MarketCommand extends BasicCommand {
                         if (args.length >= 3) {
                             try {
                                 amount = Integer.parseInt(args[2]);
-                                if(amount <= 0){
+                                if (amount <= 0) {
                                     player.sendMessage(Text.of(TextColors.RED, "You must enter a positive number to sell in the market!"));
                                     return CommandResult.success();
                                 }
@@ -157,6 +157,12 @@ public class MarketCommand extends BasicCommand {
                         if (amount == stack.getQuantity()) {
                             player.setItemInHand(HandTypes.MAIN_HAND, null);
                         } else {
+
+                            if (amount > stack.getQuantity()) {
+                                player.sendMessage(Text.of(TextColors.RED, "You can not sell more than what you're holding."));
+                                return CommandResult.success();
+                            }
+
                             stack.setQuantity(amount);
                         }
 
