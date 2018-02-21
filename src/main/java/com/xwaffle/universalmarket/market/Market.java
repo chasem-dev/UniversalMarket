@@ -1,16 +1,19 @@
 package com.xwaffle.universalmarket.market;
 
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 import com.xwaffle.universalmarket.UniversalMarket;
 import com.xwaffle.universalmarket.utils.InventoryBuilder;
 import com.xwaffle.universalmarket.utils.ItemBuilder;
 import net.minecraft.nbt.NBTTagCompound;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryProperty;
@@ -45,6 +48,7 @@ public class Market {
     private double tax = 0.20; //20% of the item.
     private int flatPrice = 1000;
     private boolean usePermissionToSell = false;
+    private List<String> blacklist;
 
     private boolean useFKey = false;
 
@@ -85,6 +89,11 @@ public class Market {
         this.payFlatPrice = UniversalMarket.getConfig().get().getNode("Market", "pay-to-sell").getBoolean();
         this.flatPrice = UniversalMarket.getConfig().get().getNode("Market", "market-price").getInt();
         this.usePermissionToSell = UniversalMarket.getConfig().get().getNode("Market", "use-permissions-to-sell").getBoolean();
+        try {
+            this.blacklist = UniversalMarket.getConfig().get().getNode("Market", "blacklist").getList(TypeToken.of(String.class));
+        } catch (ObjectMappingException e) {
+            this.blacklist = new ArrayList<String>();
+        }
 
         this.useFKey = UniversalMarket.getConfig().get().getNode("Market", "f-key-open-market").getBoolean();
 
@@ -93,6 +102,10 @@ public class Market {
     List<MarketItem> marketItems = new ArrayList<>();
 
 //    private int marketID = -1;
+
+    public boolean isItemBlacklisted(ItemType itemType) {
+        return blacklist.contains(itemType.getId());
+    }
 
     public void addItem(MarketItem marketItem, boolean addToDB) {
         if (addToDB) {
