@@ -14,6 +14,8 @@ All Universal Market commands can be use as /um or /universalmarket
 `/um add (price)`
 `/um add (price) (<optional>amount)`
 
+### Reload Config
+`/um reload, /um r`
 
 ## The Market
 ![Market](https://gyazo.com/aa747f5486fbe224f74984d94bbd91f6.png)
