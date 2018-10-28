@@ -1,0 +1,44 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+minecraft {
+    version = "1.10.2-12.18.2.2099"
+    runDir = "run"
+
+    mappings = "snapshot_20160518"
+}
+
+sourceCompatibility = targetCompatibility = "1.8"
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
+
+group = pluginGroup
+version = pluginVersion
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:6.0.0'
+//    compile 'org.spongepowered:spongeforge:6.0.0:dev'
+
+    compile files('libs/spongeforge-1.10.2-2281-5.2.0-BETA-2555.jar')
+
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spongepowered-repo'
+        url = 'http://repo.spongepowered.org/maven/'
+    }
+    flatDir {
+        dirs 'libs'
+    }
+}
