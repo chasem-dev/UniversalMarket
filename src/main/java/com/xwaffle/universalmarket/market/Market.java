@@ -18,9 +18,12 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryProperty;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.query.QueryOperation;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
+import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -81,6 +84,11 @@ public class Market {
     }
 
     public Market() {
+        reloadConfig();
+    }
+
+
+    public void reloadConfig() {
         this.totalItemsCanSell = UniversalMarket.getConfig().get().getNode("Market", "total-items-player-can-sell").getInt();
         this.expireItems = UniversalMarket.getConfig().get().getNode("Market", "enable-market-expire").getBoolean();
         this.expireTime = UniversalMarket.getConfig().get().getNode("Market", "time-market-expires").getLong();
@@ -89,17 +97,20 @@ public class Market {
         this.payFlatPrice = UniversalMarket.getConfig().get().getNode("Market", "pay-to-sell").getBoolean();
         this.flatPrice = UniversalMarket.getConfig().get().getNode("Market", "market-price").getInt();
         this.usePermissionToSell = UniversalMarket.getConfig().get().getNode("Market", "use-permissions-to-sell").getBoolean();
+        this.useFKey = UniversalMarket.getConfig().get().getNode("Market", "f-key-open-market").getBoolean();
+
         try {
             this.blacklist = UniversalMarket.getConfig().get().getNode("Market", "blacklist").getList(TypeToken.of(String.class));
         } catch (ObjectMappingException e) {
-            this.blacklist = new ArrayList<String>();
+            System.out.println("Creating new Config option.");
+            this.blacklist = new ArrayList<>();
+            UniversalMarket.getConfig().get().getNode("Market", "blacklist").setValue(new ArrayList<String>()); // Write to Config.
+            UniversalMarket.getConfig().save();
         }
-
-        this.useFKey = UniversalMarket.getConfig().get().getNode("Market", "f-key-open-market").getBoolean();
-
     }
 
-    List<MarketItem> marketItems = new ArrayList<>();
+
+    private List<MarketItem> marketItems = new ArrayList<>();
 
 //    private int marketID = -1;
 
@@ -190,9 +201,12 @@ public class Market {
                                 openMarket(player, nextPage);
                             }).delayTicks(1).submit(UniversalMarket.getInstance());
                         } else if (slotClicked == 47 && stack.getItem() == ItemTypes.NAME_TAG) {
-
                             Iterator<MarketItem> iterator = getListings().iterator();
                             while (iterator.hasNext()) {
+                                if (player.getInventory().totalItems() == player.getInventory().capacity()) {
+                                    player.sendMessage(Text.of(TextColors.RED, "You do not have room in your inventory."));
+                                    break;
+                                }
                                 MarketItem marketItem = iterator.next();
                                 if (marketItem.getOwnerUUID().equals(player.getUniqueId())) {
                                     player.getInventory().offer(marketItem.getItem());
@@ -273,9 +287,29 @@ public class Market {
                 if (e.getTransactions().size() != 0) {
                     int slotClicked = ((SlotAdapter) e.getTransactions().get(0).getSlot()).slotNumber;
 
+                    Inventory playerInv = getMainInventory(player.getInventory());
+
                     if (slotClicked == 0 && marketItem.getOwnerUUID().equals(player.getUniqueId())) {
+                        if (playerInv.size() == playerInv.capacity()) {
+                            player.sendMessage(Text.of(TextColors.RED, "You do not have room in your inventory."));
+                            Sponge.getScheduler().createTaskBuilder().execute(() ->
+                                    player.closeInventory()).submit(UniversalMarket.getInstance());
+
+                            return;
+                        }
+                        ItemStack stack = myList.get(4).peek().get();
+                        net.minecraft.item.ItemStack nmsStack = ItemStackUtil.toNative(stack);
+                        NBTTagCompound nbt = nmsStack.getTagCompound();
+                        int databaseID = nbt != null ? nbt.getInteger("id") : -1;
+
+                        if (!UniversalMarket.getInstance().getMarket().doesItemExist(databaseID)) {
+                            player.sendMessage(Text.of(TextColors.RED, "It appears that item is no longer for sale!"));
+                            Sponge.getScheduler().createTaskBuilder().execute(() -> UniversalMarket.getInstance().getMarket().openMarket(player)).submit(UniversalMarket.getInstance());
+                            return;
+                        }
+
                         player.sendMessage(Text.of(TextColors.DARK_GRAY, "Removed item from UniversalMarket."));
-                        player.getInventory().offer(marketItem.getItem());
+                        playerInv.offer(marketItem.getItem() );
                         marketItem.delete();
                         Sponge.getScheduler().createTaskBuilder().execute(() ->
                                 player.closeInventory()).submit(UniversalMarket.getInstance());
@@ -286,11 +320,18 @@ public class Market {
                         int databaseID = nbt != null ? nbt.getInteger("id") : -1;
                         MarketItem item = UniversalMarket.getInstance().getMarket().getMarketItem(databaseID);
                         UniqueAccount account = UniversalMarket.getInstance().getEconomyService().getOrCreateAccount(player.getUniqueId()).get();
-                        org.spongepowered.api.service.economy.Currency currency = UniversalMarket.getInstance().getEconomyService().getDefaultCurrency();
+                        Currency currency = UniversalMarket.getInstance().getEconomyService().getDefaultCurrency();
 
                         if (!UniversalMarket.getInstance().getMarket().doesItemExist(databaseID)) {
                             player.sendMessage(Text.of(TextColors.RED, "It appears that item is no longer for sale!"));
                             Sponge.getScheduler().createTaskBuilder().execute(() -> UniversalMarket.getInstance().getMarket().openMarket(player)).submit(UniversalMarket.getInstance());
+                            return;
+                        }
+                        if (playerInv.size() == playerInv.capacity()) {
+                            player.sendMessage(Text.of(TextColors.RED, "You do not have room in your inventory."));
+                            Sponge.getScheduler().createTaskBuilder().execute(() ->
+                                    player.closeInventory()).submit(UniversalMarket.getInstance());
+
                             return;
                         }
 
@@ -304,7 +345,7 @@ public class Market {
                             Sponge.getServer().getPlayer(marketItem.getOwnerUUID()).ifPresent(seller -> seller.sendMessage(Text.of(TextColors.YELLOW, "+ ", TextColors.GREEN, marketItem.getPrice())));
                             player.sendMessage(Text.of(TextColors.DARK_RED, "- ", TextColors.RED, marketItem.getPrice()));
                             player.sendMessage(Text.of(TextColors.YELLOW, "New Balance: ", TextColors.GREEN, account.getBalance(currency)));
-                            player.getInventory().offer(item.getItem());
+                            playerInv.offer(item.getItem());
                             Sponge.getScheduler().createTaskBuilder().execute(player::closeInventory).submit(UniversalMarket.getInstance());
                         } else {
                             player.sendMessage(Text.of(TextColors.RED, "Insufficient funds."));
@@ -354,6 +395,12 @@ public class Market {
 
         player.openInventory(inv);
 
+    }
+
+
+    public Inventory getMainInventory(Inventory inventory) {
+        return inventory.query(QueryOperationTypes.INVENTORY_TYPE.of(Hotbar.class))
+                .union(inventory.query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class)));
     }
 
     public int countListings(UUID uniqueId) {

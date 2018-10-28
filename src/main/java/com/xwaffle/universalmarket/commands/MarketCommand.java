@@ -29,16 +29,25 @@ public class MarketCommand extends BasicCommand {
     public CommandResult process(CommandSource source, String arguments) throws CommandException {
         String[] args = arguments.split(" ");
 
-        Player player = (Player) source;
+        Player player = null;
+        if (source instanceof Player) {
+            player = (Player) source;
+        }
+
         long expireTime = UniversalMarket.getInstance().getMarket().getExpireTime();
         long totalListings = UniversalMarket.getInstance().getMarket().getTotalItemsCanSell();
 
 
         if (arguments.isEmpty() || arguments.equalsIgnoreCase("")) {
-            if (player.hasPermission("com.xwaffle.universalmarket.open")) {
-                UniversalMarket.getInstance().getMarket().openMarket(player);
+
+            if (player != null) {
+                if (player.hasPermission("com.xwaffle.universalmarket.open")) {
+                    UniversalMarket.getInstance().getMarket().openMarket(player);
+                } else {
+                    source.sendMessage(Text.of(TextColors.RED, "You do not have permission to view the market."));
+                }
             } else {
-                player.sendMessage(Text.of(TextColors.RED, "You do not have permission to view the market."));
+                source.sendMessage(Text.of(TextColors.RED + "You can't open market from console!"));
             }
             return CommandResult.success();
         }
@@ -47,6 +56,8 @@ public class MarketCommand extends BasicCommand {
             switch (args[0].toLowerCase()) {
                 case "open":
                 case "o":
+                    if (player == null)
+                        break;
                     if (player.hasPermission("com.xwaffle.universalmarket.open")) {
                         UniversalMarket.getInstance().getMarket().openMarket(player);
                     } else {
@@ -55,8 +66,8 @@ public class MarketCommand extends BasicCommand {
                     break;
                 case "add":
                 case "a":
-
-
+                    if (player == null)
+                        break;
                     if (!player.hasPermission("com.xwaffle.universalmarket.add")) {
                         player.sendMessage(Text.of(TextColors.RED, "You do not have permission to add items to the market."));
                         return CommandResult.success();
@@ -76,7 +87,6 @@ public class MarketCommand extends BasicCommand {
 
 
                     if (UniversalMarket.getInstance().getMarket().isUsePermissionToSell()) {
-                        System.out.println("User Perm Sell");
                         int userMaxSellPerm = 0;
                         for (int i = 1; i < 99; i++) {
                             if (player.hasPermission("com.xwaffle.universalmarket.addmax." + i)) {
@@ -99,6 +109,12 @@ public class MarketCommand extends BasicCommand {
                         double price;
                         try {
                             price = Double.parseDouble(args[1]);
+
+                            if (price < 0) {
+                                player.sendMessage(Text.of(TextColors.RED, "You must enter a positive price!"));
+                                return CommandResult.success();
+
+                            }
                         } catch (Exception exc) {
                             player.sendMessage(Text.of(TextColors.RED, "Invalid Price for Item!"));
                             player.sendMessage(Text.of(TextColors.YELLOW, "/um " + args[0].toLowerCase() + " (price of item in hand) (<optional> Amount)"));
@@ -113,6 +129,9 @@ public class MarketCommand extends BasicCommand {
                                 if (amount <= 0) {
                                     player.sendMessage(Text.of(TextColors.RED, "You must enter a positive number to sell in the market!"));
                                     return CommandResult.success();
+                                } else if (amount > stack.getQuantity()) {
+                                    player.sendMessage(Text.of(TextColors.RED, "You can not sell more than what you're holding."));
+                                    return CommandResult.success();
                                 }
                             } catch (Exception exc) {
                                 player.sendMessage(Text.of(TextColors.RED, "Invalid Amount for Item!"));
@@ -123,6 +142,12 @@ public class MarketCommand extends BasicCommand {
 
                         if (UniversalMarket.getInstance().getMarket().useTax()) {
                             double tax = price * UniversalMarket.getInstance().getMarket().getTax();
+
+                            if (UniversalMarket.getInstance().getEconomyService() == null) {
+                                source.sendMessage(Text.of(TextColors.RED, "This server is not using a currency plugin! This is required to use Universal Market!"));
+                                return CommandResult.success();
+                            }
+
                             UniqueAccount account = UniversalMarket.getInstance().getEconomyService().getOrCreateAccount(player.getUniqueId()).get();
                             Currency currency = UniversalMarket.getInstance().getEconomyService().getDefaultCurrency();
                             if (account.getBalance(currency).doubleValue() < tax) {
@@ -163,11 +188,6 @@ public class MarketCommand extends BasicCommand {
                             player.setItemInHand(HandTypes.MAIN_HAND, null);
                         } else {
 
-                            if (amount > stack.getQuantity()) {
-                                player.sendMessage(Text.of(TextColors.RED, "You can not sell more than what you're holding."));
-                                return CommandResult.success();
-                            }
-
                             stack.setQuantity(amount);
                         }
 
@@ -185,20 +205,35 @@ public class MarketCommand extends BasicCommand {
                     } else {
                         player.sendMessage(Text.of(TextColors.RED, "Place an item in your hand to sell!"));
                     }
-
-
                     break;
                 case "help":
                 case "h":
                 case "?":
-                    player.sendMessage(Text.of(TextColors.DARK_AQUA, "Universal Market Help"));
-                    player.sendMessage(Text.of(TextColors.YELLOW, "/um or /universalmarket"));
-                    player.sendMessage(Text.of(TextColors.YELLOW, "/um a (price) (<optional> amount) or /um add (price) (<optional> amount)", TextColors.GRAY, " - ", TextColors.GREEN, "Sells current held ItemStack for price."));
-                    player.sendMessage(Text.of(TextColors.YELLOW, "/um o or /um open", TextColors.GRAY, " - ", TextColors.GREEN, "Open the Universal Market."));
+                    source.sendMessage(Text.of(TextColors.DARK_AQUA, "Universal Market Help"));
+                    source.sendMessage(Text.of(TextColors.YELLOW, "/um or /universalmarket"));
+                    source.sendMessage(Text.of(TextColors.YELLOW, "/um a (price) (<optional> amount) or /um add (price) (<optional> amount)", TextColors.GRAY, " - ", TextColors.GREEN, "Sells current held ItemStack for price."));
+                    source.sendMessage(Text.of(TextColors.YELLOW, "/um o or /um open", TextColors.GRAY, " - ", TextColors.GREEN, "Open the Universal Market."));
+                    source.sendMessage(Text.of(TextColors.YELLOW, "/um i or /um info", TextColors.GRAY, " - ", TextColors.GREEN, "Display the current configuration of the market."));
+                    source.sendMessage(Text.of(TextColors.YELLOW, "/um r or /um reload", TextColors.GRAY, " - ", TextColors.GREEN, "Reloads the market config."));
+                    break;
+                case "reload":
+                case "r":
+                    if (source.hasPermission("com.xwaffle.universalmarket.reload")) {
+                        UniversalMarket.getInstance().getMarket().reloadConfig();
+                        source.sendMessage(Text.of(TextColors.GREEN, "Market Config Reloaded!"));
+                    } else {
+                        source.sendMessage(Text.of(TextColors.RED, "Youre missing permissions to reload the market!"));
+                    }
+                    break;
+                case "info":
+                case "i":
+                    source.sendMessage(Text.of(TextColors.DARK_AQUA, "Current Tax Percentage: ", TextColors.AQUA, UniversalMarket.getInstance().getMarket().getTax()));
                     break;
             }
         } else {
-            UniversalMarket.getInstance().getMarket().openMarket(player);
+            if (player != null) {
+                UniversalMarket.getInstance().getMarket().openMarket(player);
+            }
         }
 
         return CommandResult.success();

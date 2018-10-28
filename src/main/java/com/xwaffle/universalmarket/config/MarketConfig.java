@@ -27,7 +27,7 @@ public class MarketConfig implements Configurable {
         setup();
     }
 
-    private Path configFile = Paths.get(UniversalMarket.getInstance().configDir.getParent() + File.separator + "UniversalMarket" + File.separator + "config.conf", new String[0]);
+    private Path configFile = Paths.get(UniversalMarket.getInstance().configDir.getParent() + File.separator + "UniversalMarket" + File.separator + "config.conf");
     private ConfigurationLoader<CommentedConfigurationNode> configLoader = ((HoconConfigurationLoader.Builder) HoconConfigurationLoader.builder().setPath(this.configFile)).build();
     private CommentedConfigurationNode configNode;
 
@@ -38,9 +38,9 @@ public class MarketConfig implements Configurable {
             configDirectory.mkdirs();
         }
 
-        if (!Files.exists(this.configFile, new LinkOption[0])) {
+        if (!Files.exists(this.configFile)) {
             try {
-                Files.createFile(this.configFile, new FileAttribute[0]);
+                Files.createFile(this.configFile);
                 load();
                 populate();
                 save();
@@ -53,7 +53,7 @@ public class MarketConfig implements Configurable {
     }
 
     public boolean isExternal() {
-        return get().getNode(new Object[]{"Database", "use-external"}).getBoolean();
+        return get().getNode("Database", "use-external").getBoolean();
     }
 
     public void load() {
