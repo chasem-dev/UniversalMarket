@@ -32,7 +32,7 @@ import java.sql.SQLException;
         authors = {
                 "Xwaffle"
         },
-        version = "1.3"
+        version = "1.4"
 )
 public class UniversalMarket {
 

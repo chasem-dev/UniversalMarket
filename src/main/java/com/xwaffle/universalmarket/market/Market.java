@@ -1,12 +1,19 @@
 package com.xwaffle.universalmarket.market;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.xwaffle.universalmarket.UniversalMarket;
 import com.xwaffle.universalmarket.utils.InventoryBuilder;
 import com.xwaffle.universalmarket.utils.ItemBuilder;
-import net.minecraft.nbt.NBTTagCompound;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.living.player.Player;
@@ -16,28 +23,19 @@ import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.InventoryProperty;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
-import org.spongepowered.api.item.inventory.property.SlotIndex;
-import org.spongepowered.api.item.inventory.query.QueryOperation;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.common.item.inventory.adapter.impl.slots.SlotAdapter;
-import org.spongepowered.common.item.inventory.query.operation.InventoryPropertyQueryOperation;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import net.minecraft.nbt.NBTTagCompound;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 /**
  * Created by Chase(Xwaffle) on 10/16/2017.

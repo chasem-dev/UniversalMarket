@@ -1,6 +1,13 @@
+.classpath
+.project
+.settings
+.gradle
+.vscode
 /.idea
-/build/tmp/retromapReplacedMain
+/build
+/bin
 /.gradle/3.3/taskArtifacts
 /*.iml
 /build
 /libs
+*.launch

@@ -9,6 +9,7 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
+import org.spongepowered.common.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,9 @@ public class ItemBuilder {
         itemStack = ItemStack.of(itemType, ammount);
         DataContainer container = itemStack.toContainer();
         container.set(DataQuery.of("UnsafeDamage"), meta);
-        itemStack.setRawData(container);
+        if(container.contains(Constants.Sponge.UNSAFE_NBT)){
+            itemStack.setRawData(container);
+        }
     }
 
     public ItemBuilder setName(Text name) {
